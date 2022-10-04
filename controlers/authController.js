@@ -14,8 +14,11 @@ const debug = require('debug')('app:authController');
 
 const signUp = async (req, res) => {
     const {username, password} = req.body
+    debug('[+] Hashing Password...')
     const hashedPassword = await bcrypt.hash(password, 10)
-    console.log(username, password, hashedPassword)
+    debug('[+] Password Hashed')
+    // console.log(username, password, hashedPassword)
+    debug(`[+] Creating ${username}`)
     const resp = await newUser(username, hashedPassword)
     if(resp.code == 11000){
         debug('[-] Duplicate User Error')
@@ -32,9 +35,13 @@ const logIn = async (req,res)=>{
     
     const resp = await getUser(username)
     if (resp.status == 'success'){
+        debug('[+] Verifying Password')
         if(await bcrypt.compare(password, resp.user.password)){
+            debug('[+] Valid Password')
+            debug('[+] Signing Tokens...')
             const accessToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_ACCESS_SECRET, {expiresIn:'15m'})
             const refreshToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_REFRESH_SECRET, {expiresIn:'15m'})
+            debug('[+] Tokens Signed')
             res.cookie('jwt', refreshToken, {httpOnly:true, maxAge:ms('1d')})
             const msg = await loginUser(username, refreshToken)
             debug('[+] User Logged In')
@@ -64,6 +71,7 @@ const logOut = async (req,res)=>{
         debug('[+] Refresh Token Removed')
         return res.status(204).send({msg:resp.msg})
     }
+    debug('[+] Refresh Token Not Removed')
     return res.status(400).send({msg:resp.msg})
 }
 
@@ -91,11 +99,13 @@ const refreshToken = async (req,res)=>{
         return res.status(400).send({msg:'No Jwt Cookie'})
     } 
     const refreshToken = cookies.jwt
+    debug('[+] Verifying Refresh Token...')
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded)=>{
         if(err){
-            debug('[-] Invalid Refresh Token')
+            debug('[-] Invalid Token')
             return res.status(400).send({msg:"Invalid Refresh Token"})
         } 
+        debug('[+] Valid Token')
         const accessToken = jwt.sign({username:decoded.username}, process.env.JWT_ACCESS_SECRET, {expiresIn:'30s'})
         debug('[+] Access Token Refreshed')
         return res.status(200).send({msg:'success', accessToken:accessToken})

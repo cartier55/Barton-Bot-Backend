@@ -8,11 +8,10 @@ const ensureToken = require('./middleware/ensureToken');
 const app = express();
 const cors = require('cors')
 // Routers
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth')
 const botRouter = require('./routes/bot')
-const proxyRouter = require('./routes/proxy')
+const proxyRouter = require('./routes/proxy');
+const { init } = require('./utils/cron/createCron');
 
 
 
@@ -38,7 +37,6 @@ app.use(cors({ credentials: true, origin: true }))
 
 // Base Routes
 app.use('/api/auth', authRouter);
-app.use('/users', usersRouter);
 app.use(ensureToken) //Add this before routes that need to be protected ny valid token
 app.use('/api/bot', botRouter);
 app.use('/api/proxy', proxyRouter);
@@ -60,6 +58,7 @@ app.use(function(err, req, res, next) {
 
 app.listen(process.env.PORT, ()=>{
   debug(`Listening on ${process.env.PORT}`);
+  init()
   
 })
 

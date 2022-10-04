@@ -1,21 +1,27 @@
 const jwt = require('jsonwebtoken')
+const debug = require('debug')('app:ensureToken');
 const ensureToken = async (req, res, next) => {
  const bearerHeader = req.headers["authorization"]
  if(typeof bearerHeader !== 'undefined') {
-  const bearer = bearerHeader.split(" ")
-  const bearerToken = bearer[1]
-  jwt.verify(bearerToken, process.env.JWT_ACCESS_SECRET, (err, result) => {
-    if(err) { 
-        // res.status(403).json({msg:'Invalid Access Token'})
-        res.status(403).send('Invalid Access Token')
+    debug('[+] Access Token Found')
+    const bearer = bearerHeader.split(" ")
+    const bearerToken = bearer[1]
+    debug('[+] Verifying Token')
+    jwt.verify(bearerToken, process.env.JWT_ACCESS_SECRET, (err, result) => {
+        if(err) { 
+            // res.status(403).json({msg:'Invalid Access Token'})
+            debug('[-] Invalid Token')
+            res.status(403).send('Invalid Access Token')
+        }else{
+            debug('[+] Valid Token')
+            req.user = result;        
+            next() 
+        }
+    })
     }else{
-        req.user = result;        
-        next() 
+        debug('[-] Access Token Not Found')
+        res.sendStatus(401)
     }
-})
-}else{
-    res.sendStatus(401)
-   }
 }
 
 module.exports = ensureToken

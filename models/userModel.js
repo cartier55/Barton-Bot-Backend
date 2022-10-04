@@ -6,8 +6,6 @@ const userModel = new mongoose.Schema({
     password:{type:String, required: true,},
     refreshToken:{type:String, default: ''},
     proxyConfig:{type: mongoose.Types.ObjectId, ref:'Proxy'},
-    pendingJobs:{type: [mongoose.Types.ObjectId], ref:'PendingJob'},
-    completedJobs:{type: [mongoose.Types.ObjectId], ref:'CompletedJob'}
 },{collection:'users'})
 
 

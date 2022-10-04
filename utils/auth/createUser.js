@@ -1,16 +1,21 @@
 const User = require('../../models/userModel');
 const mongoose = require('mongoose');
 const mongoConnect = require('../db/mongoConnect');
+const debug = require('debug')('app:createUser');
+
 const newUser = async (username, password) =>{
     await mongoConnect(process.env.DB_PWORD)
     try {
+        debug('[+] Creating User...')
         const resp = await User.create({
             username,
             password
         })
-        console.log('Created', resp);
+        debug('[+] Created %O', resp)
+        // console.log('Created', resp);
         return {status:"success"}
     } catch (err) {
+        debug('[-] Error Creating User')
         console.log(err);
         return {status:'error', code:err.code, error:'Username already in use'}
     }

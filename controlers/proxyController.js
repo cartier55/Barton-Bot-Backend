@@ -36,10 +36,19 @@ const retrieve = async (req,res)=>{
     const resp = await retrieveProxyConfig(username)
     
     if(resp.status == "success"){
+        debug('[+] Sucessful Retrieval')
         return res.status(200).json({proxyConfig:resp._doc})
     } 
-    if(resp.status == "no proxy") res.sendStatus(404)
-    if(resp.status == "error") res.sendStatus(500)
+    if(resp.status == "no proxy"){
+        debug('[+] Successful Retrieval')
+        res.sendStatus(404)
+        
+    } 
+    if(resp.status == "error"){
+        debug('[+] Retrieval Error')
+        res.sendStatus(500)
+
+    } 
     
 }
 
@@ -47,8 +56,10 @@ const clear = async (req,res)=>{
     const {username} = req.user
     const resp = await clearProxyConfig(username)
     if (resp.status == "success"){
+        debug('[+] Removed Successfully')
         return res.status(200).json({msg:"Proxy Configuration Cleared"})
     }else{
+        debug('[-] Error Removing')
         return res.status(500).json({msg:"Proxy Configuration Not Cleared"})
     }
 }
