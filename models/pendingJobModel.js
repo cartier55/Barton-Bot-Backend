@@ -32,6 +32,8 @@ pendingJobModel.pre('findOneAndUpdate', async function() {
 
 pendingJobModel.post('findOneAndUpdate', function() {
   const id = this._conditions._id.toString()
+  console.log('updatre post func')
+  console.log(this._update['$set'].courseList)
   if(this._update['$set'].botStartDate || this._update['$set'].botStartTime){
     createCron({id:id, ...this._update['$set']})
   }

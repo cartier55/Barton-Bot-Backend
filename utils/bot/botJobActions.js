@@ -216,7 +216,6 @@ const getJobs = async () =>{
 }
 
 const runBot = async (todayJobs) =>{
-    await mongoConnect(process.env.DB_PWORD)
     
     for(const job of todayJobs){
         debug('[+] Decrypting ClubPassword...')
@@ -232,6 +231,8 @@ const runBot = async (todayJobs) =>{
             await startBot(member=job.member?job.member : null, proxy=proxyConfig.status === 'success'?proxyConfig:null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.date, job.courseList, job.id)
             // await console.log(member=job.member?job.member : null, proxy=proxyConfig.status === 'success'?proxyConfig:null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.courseList, job.id)
         }else{
+            console.log('typeof job.courseList')
+            console.log(typeof job.courseList)
             await startBot(member=job.member?job.member : null, proxy=null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.date, job.courseList, job.id)
             // await console.log(member=job.member?job.member : null, proxy=null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.courseList, job.id)
         }

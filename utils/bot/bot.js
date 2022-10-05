@@ -1,7 +1,8 @@
 const { Cluster } = require('puppeteer-cluster');
 const puppeteer = require('puppeteer-extra')
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-const { activateJob, endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const { activateJob, endJob } = require('./botJobActions');
+// const { activateJob, endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
 
 
 const activateCluster = async (posts) =>{
@@ -32,8 +33,11 @@ const activateCluster = async (posts) =>{
 }
 
 async function startBot(member=null, proxy=null, username, password, startTime, endTime, date, courseList, jobId){ 
-    const { activateJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+    // const { activateJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+    const { activateJob } = require('./botJobActions');
+
     // async function startBot(){ 
+        console.log(typeof courseList)
         console.log("[+] Bot Starting...")
         
     const callback = function(err, resp){
@@ -195,7 +199,7 @@ const findTime = async (page, startTime, endTime, courseList) =>{
     // const example = await page.$('#example'); // Element
     // const example_parent = (await example.$x('..'))[0]; // Element Parent
     // const example_siblings = await example.$x('following-sibling::*'); // Element Siblings
-
+    console.log(typeof courseList)
     for (const course of courseList){
         // if(course !== '')
         await changeCourse(page, course)
@@ -405,7 +409,9 @@ const checkTime = () =>{
 }
 
 const completeJob = async ( browser, sucess, id, time=null, course=null, member=null)=>{
-    const { endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+    // const { endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+    const { endJob } = require('./botJobActions');
+
     try {
         // await browser.close()
         console.log('[+] Job Completed')

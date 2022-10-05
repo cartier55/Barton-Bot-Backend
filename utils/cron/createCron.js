@@ -1,8 +1,9 @@
 const schedule = require('node-schedule');
-const { getJobs } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+// const { getJobs } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
 const debug = require('debug')('app:createCron');
 
 const init = () =>{
+    const { getJobs } = require('../bot/botJobActions');
     debug('[+] Initalizing Cron...')
     const rule = new schedule.RecurrenceRule();
     rule.hour = 5;
@@ -18,8 +19,10 @@ const init = () =>{
 }
 
 const createCron = (job) =>{
-    const { runBot } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
+    const { runBot } = require('../bot/botJobActions');
+    // const { runBot } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
     debug('[+] Scheduling Job')
+    console.log(job)
     const day = sevenDaysBefore(job.date, true)
     const startDate = new Date(job.botStartDate ? job.botStartDate : sevenDaysBefore(job.date, true))
     const startTime = changeTimeZone(new Date(`09/19/2000 ${job.botStartTime ? job.botStartTime : '6:00 AM'}`))

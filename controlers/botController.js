@@ -26,7 +26,7 @@ const updateJob = async (req, res) => {
     // const {encryptedToken, iv} = encryptToken(clubPassword)
     console.log(date, startTime, endTime, clubUsername, clubPassword, member, priorityList, proxy, botStartDate, botStartTime, _id);
     debug(`[+] Updating ${_id}`)
-    const resp = await updateUserJob(_id, {date, startTime, endTime, priorityList, member, clubUsername, clubPassword, proxy, botStartDate, botStartTime})
+    const resp = await updateUserJob(_id, {date, startTime, endTime, courseList:priorityList, member, clubUsername, clubPassword, proxy, botStartDate, botStartTime})
     if (resp.status === "success") return res.status(202).json(resp)
     else return res.status(400).json(resp)
     
