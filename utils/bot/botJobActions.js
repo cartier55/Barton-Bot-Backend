@@ -37,26 +37,20 @@ const newJob = async (date, startTime, endTime, courseList, member, clubUsername
 
 
 const getUserJobs = async (username) =>{
-// const getUserJobs = async () =>{
     await mongoConnect(process.env.DB_PWORD)
     try {
         debug('[+] Retriving Jobs...')
         const pendingJobs = await PendingJob.find({user:username})
         const completedJobs= await CompletedJob.find({user:username})
         
-        // const resp = await User.findOne({username:username}).populate(['pendingJobs', 'completedJobs'])
-        // const {pendingJobs, completedJobs} = resp 
         if (pendingJobs || completedJobs){
             debug('[+] Jobs Retrived')
             return {status:"success", pendingJobs:pendingJobs, completedJobs:completedJobs}
         } 
-        // if (pendingJobs) return {status:"success", pendingJobs:pendingJobs, completedJobs:completedJobs}
         else{
             debug('[-] Error Retriving Jobs')
             return {status:"error"}
         } 
-        // console.log(pendingJobs)
-        // return
     } catch (err) {
         debug('[-] Error Retriving Jobs')
         console.log(err);
@@ -68,13 +62,11 @@ const getUserJobs = async (username) =>{
 const updateUserJob = async (id, update) =>{
     await mongoConnect(process.env.DB_PWORD)
     try {
-        // delete update['clubPassword']
         debug('[+] Encrypting ClubPassword...')
         const {encryptedToken, iv} = encryptToken(update.clubPassword)
         update['clubPassword'] = {token:encryptedToken, iv:iv}
         debug('[+] Updating Job...')
         const resp = await PendingJob.findByIdAndUpdate(id, update)
-        // console.log(resp);
         
         if (resp._id){
             debug('[+] Job Updated')
@@ -98,7 +90,6 @@ const destroyUserPendingJob = async (id) =>{
     try {
         debug('[+] Deleting Pending Job...')
         const removedJob = await PendingJob.findByIdAndDelete(id)
-        // console.log(removedJob)       
         if(removedJob){
             debug('[+] Job Deleted')
             return {status:"success", msg: "Job Deleted"}
@@ -120,7 +111,6 @@ const destroyUserCompletedJob = async (id) =>{
     try {
         debug('[+] Deleting Completed Job...')
         const removedJob = await CompletedJob.findByIdAndDelete(id)
-        // console.log(removedJob)
         if(removedJob){
             debug('[+] Job Deleted')
             return {status:"success", msg: "Job Deleted"}
@@ -148,7 +138,6 @@ const activateJob = async (jobID)=>{
                     return {status:"error"}
                 }else{
                     console.log(`[+] Job Activated - ${jobID}`)
-                    // console.log(doc)
                     return {status:"success", msg: "Job Activated"}
                     
                 }}).clone()
@@ -190,17 +179,12 @@ const getJobs = async () =>{
     await mongoConnect(process.env.DB_PWORD)
     try {
         
-        // const resp = await PendingJob.find().populate(['pendingJobs', 'completedJobs'])
         debug('[+] Retriving All Jobs...')
         const pendingJobs = await PendingJob.find()
-        // Find User with job
-        // console.log(await User.findOne({pendingJobs:pendingJobs[0].id}))
         
-        // const {pendingJobs, completedJobs} = resp 
         if (pendingJobs && pendingJobs.length) {
             debug('[+] Jobs Retrived')
             testJobsDate(pendingJobs)
-            // return {pendingJobs:pendingJobs}
         }
         else if(pendingJobs.length === 0) {
             debug('[+] No PendingJobs')
@@ -229,12 +213,8 @@ const runBot = async (todayJobs) =>{
                 debug("[-] Proxy Config Retrival Error/Running Without Proxy")
             }
             await startBot(member=job.member?job.member : null, proxy=proxyConfig.status === 'success'?proxyConfig:null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.date, job.courseList, job.id)
-            // await console.log(member=job.member?job.member : null, proxy=proxyConfig.status === 'success'?proxyConfig:null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.courseList, job.id)
         }else{
-            console.log('typeof job.courseList')
-            console.log(typeof job.courseList)
             await startBot(member=job.member?job.member : null, proxy=null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.date, job.courseList, job.id)
-            // await console.log(member=job.member?job.member : null, proxy=null, job.clubUsername, clubPassword, job.startTime, job.endTime, job.courseList, job.id)
         }
     }
     return

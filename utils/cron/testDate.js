@@ -1,11 +1,4 @@
-const mongoConnect = require("../db/mongoConnect");
-const PendingJob = require('../../models/pendingJobModel');
-const { startBot } = require("../bot/bot");
-const { decryptToken } = require("../proxy/tokenCrypt");
-const { getProxyConfig } = require("../proxy/getProxy");
 const { createCron } = require("./createCron");
-// const { createCron } = require("./createCron");
-// const { createCron } = require("c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/cron/createCron");
 const debug = require('debug')('app:testDate');
 
 
@@ -51,19 +44,11 @@ const sevenDaysBefore = (date, retrieve=false) =>{
 const testJobsDate = (jobs) =>{
     debug('[+] Testing Job Dates...')
     const job = jobs.find(job=> sevenDaysBefore(job.date) && !job.botStartDate && !job.botStartTime)
-    // jobs.forEach((job) =>{
-    //     // console.log(job.id)
-    //     // if(sevenDaysBefore(job.date) && !job.botStartDate && !job.botStartTime) todayJobs.push(job)
-    //     todayJobs.push(job)
-    // })
+    
     if (job){
         debug('[+] Job Found')
         createCron(job)
     }else debug('[-] No Jobs For Today')
 }
-
-
-// getJobs()
-
 
 module.exports = { testJobsDate }

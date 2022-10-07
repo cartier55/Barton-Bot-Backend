@@ -1,5 +1,4 @@
-const { newJob, getUserJobs, updateUserJob, destroyUserJob, destroyUserPendingJob, destroyUserCompletedJob } = require('../utils/bot/botJobActions');
-const { getProxyConfig } = require('../utils/proxy/getProxy');
+const { newJob, getUserJobs, updateUserJob, destroyUserPendingJob, destroyUserCompletedJob } = require('../utils/bot/botJobActions');
 const debug = require('debug')('app:botController');
 
 const createJob = async (req, res) => {
@@ -23,8 +22,7 @@ const listJobs = async (req,res)=>{
 
 const updateJob = async (req, res) => {
     const {date, startTime, endTime, clubUsername, clubPassword, member, priorityList, proxy, botStartDate, botStartTime, _id} = req.body
-    // const {encryptedToken, iv} = encryptToken(clubPassword)
-    console.log(date, startTime, endTime, clubUsername, clubPassword, member, priorityList, proxy, botStartDate, botStartTime, _id);
+    // console.log(date, startTime, endTime, clubUsername, clubPassword, member, priorityList, proxy, botStartDate, botStartTime, _id);
     debug(`[+] Updating ${_id}`)
     const resp = await updateUserJob(_id, {date, startTime, endTime, courseList:priorityList, member, clubUsername, clubPassword, proxy, botStartDate, botStartTime})
     if (resp.status === "success") return res.status(202).json(resp)

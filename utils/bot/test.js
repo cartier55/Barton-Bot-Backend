@@ -1,3 +1,4 @@
+// ! - Remove this file before bundling
 const getTimeList = (date, endTime) =>{
     const options = {
         hour: 'numeric',

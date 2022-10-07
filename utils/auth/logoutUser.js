@@ -1,5 +1,4 @@
 const User = require('../../models/userModel');
-const mongoose = require('mongoose');
 const mongoConnect = require('../db/mongoConnect');
 const debug = require('debug')('app:logoutUser');
 
@@ -8,7 +7,6 @@ const logoutUser = async (token) =>{
     try {
         debug('[+] Removing Refresh Token From DB...')
         const user = await User.findOneAndUpdate({refreshToken:token}, {$set:{refreshToken:""}}, {new: true})
-        // console.log(user);
         if(user.refreshToken === ''){
             return {status:"success",msg:"Logged Out"}
         }else{

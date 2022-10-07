@@ -17,7 +17,6 @@ const signUp = async (req, res) => {
     debug('[+] Hashing Password...')
     const hashedPassword = await bcrypt.hash(password, 10)
     debug('[+] Password Hashed')
-    // console.log(username, password, hashedPassword)
     debug(`[+] Creating ${username}`)
     const resp = await newUser(username, hashedPassword)
     if(resp.code == 11000){
@@ -94,7 +93,6 @@ const changePwd = async (req,res)=>{
 const refreshToken = async (req,res)=>{
     const cookies = req.cookies
     if(!cookies?.jwt){
-        // console.log('error f');
         debug('[-] No JWT Refresh Token')
         return res.status(400).send({msg:'No Jwt Cookie'})
     } 

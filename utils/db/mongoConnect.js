@@ -19,11 +19,7 @@ async function mongoConnect(){
         console.log(err)
     }
 }
-// (async ()=>{
-//     console.log('test')
-//     await mongoConnect()
 
-// })()
 
 
 module.exports = mongoConnect

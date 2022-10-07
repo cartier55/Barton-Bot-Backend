@@ -1,5 +1,4 @@
 const User = require('../../models/userModel');
-const mongoose = require('mongoose');
 const mongoConnect = require('../db/mongoConnect');
 const debug = require('debug')('app:getUser');
 
@@ -15,7 +14,6 @@ const getUser = async (username) =>{
         debug('[-] User Not Found')
         return {status:'error', error:'Invalid Username'}
     }
-    // console.log(err.code);
 }
 
 

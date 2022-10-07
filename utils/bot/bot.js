@@ -1,8 +1,10 @@
+// todo - Log to file
+// todo - Use cluster for auto restarting on error or figure out another way, max 3 retrys
+// todo - Change some variable names
+
 const { Cluster } = require('puppeteer-cluster');
 const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const { activateJob, endJob } = require('./botJobActions');
-// const { activateJob, endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
 
 
 const activateCluster = async (posts) =>{
@@ -33,20 +35,9 @@ const activateCluster = async (posts) =>{
 }
 
 async function startBot(member=null, proxy=null, username, password, startTime, endTime, date, courseList, jobId){ 
-    // const { activateJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
     const { activateJob } = require('./botJobActions');
 
-    // async function startBot(){ 
-        console.log(typeof courseList)
-        console.log("[+] Bot Starting...")
-        
-    const callback = function(err, resp){
-        if(err){
-            console.log(err)
-        }else{
-            console.log(resp)
-        }
-    }
+    console.log("[+] Bot Starting...")
     
     const browser = await puppeteer.launch({
         headless: false,
@@ -98,10 +89,9 @@ async function startBot(member=null, proxy=null, username, password, startTime, 
     await findDate(page, date)
     const sucess = await findTime(page, startTime, endTime, courseList)
     if(sucess){
-        console.log(`[+] ${sucess}`)
+        console.log(`[+] ${{...sucess}}`)
         await completeJob(browser, true, jobId, sucess.time, sucess.course, member)
     }else{
-        console.log(sucess)
         await completeJob(browser, false, jobId)
     }
     console.log("-Done")
@@ -146,10 +136,10 @@ const handleForeTeesNav = async (page, member) =>{
     console.log("[+] Navigating To ForeTees")
     await page.goto(href, {waitUntil : 'domcontentloaded' }).catch(e => void 0)
     if(!member){
-        console.log('no member')
+        console.log('[+] Selecting Default Member')
         await page.click('a.standard_button') //Clicking on first member name this is where provided memeber will be used or not
     }else{
-        console.log('yes member')
+        console.log('[+] Selecting Provided Member')
         try {
             const [btn] = await page.$x(`//a[contains(@class, "standard_button") and contains(., "${member}")]`)
             await btn.click()
@@ -166,9 +156,6 @@ const handleForeTeesNav = async (page, member) =>{
     await menu.hover()
     const link = await page.$x(`//a[contains(., "Make, Change, or View Tee Times")]`)
     await link[0].click()
-    // href = await getHref(page, "Today's Tee Sheet") 
-    // console.log(href)
-    // await page.goto(href, {waitUntil : 'domcontentloaded' }).catch(e => void 0)
     await page.waitForNavigation()
     console.log("[+] Navigated")
     return
@@ -178,6 +165,7 @@ const handleForeTeesNav = async (page, member) =>{
 
 const findDate = async (page, date) =>{
     console.log("[+] Selecting Date")
+    // ! - Rename these variables for date
     const todayNum = new Date(date).getDate()
     const [todayCal] = await page.$x(`//a[contains(., "${todayNum}")]`)
     // const [todayCal] = await page.$x(`//a[text()="4"]`)
@@ -194,14 +182,9 @@ const findTime = async (page, startTime, endTime, courseList) =>{
 
     
     const teeTimes = getTimeList(date, endTime)
-    //div[contains(@class, 'atag') and contains(@class ,'btag')]
 
-    // const example = await page.$('#example'); // Element
-    // const example_parent = (await example.$x('..'))[0]; // Element Parent
-    // const example_siblings = await example.$x('following-sibling::*'); // Element Siblings
     console.log(typeof courseList)
     for (const course of courseList){
-        // if(course !== '')
         await changeCourse(page, course)
         for (const time of teeTimes){
             console.log(`[+] Checking For ${time}`)
@@ -218,9 +201,7 @@ const findTime = async (page, startTime, endTime, courseList) =>{
                 await addPlayers(page)
                 const sucess = await requestTime(page)
                 if(sucess){
-                    // console.log("[+] Tee Time - ")
                     return {time:time, course:course}
-                    // break
                     
                     
                 }else{
@@ -254,7 +235,6 @@ const getTimeList = (date, endTime) =>{
         minute: 'numeric',
         hour12: true
     };
-    // const timeString = date.toLocaleString('en-US', options);
 
     const teeTimes = []
     let startTime = date
@@ -268,52 +248,22 @@ const getTimeList = (date, endTime) =>{
             break
         }
     } 
-    // console.log(teeTimes)
     return teeTimes
 }
 
-// getTimeList(new Date('9/10/2022 8:03 AM'), '8:21 AM')
-
-// const getTimeList = async (date, endTime) =>{
-    //     const options = {
-//         hour: 'numeric',
-//         minute: 'numeric',
-//         hour12: true
-//     };
-//     const timeString = date.toLocaleString('en-US', options);
-//     console.log(timeString);
-
-//     function addMinutes(date, endTime) {
-//         const teeTimes = []
-//         let teeTime
-//         wihle(teeTime != endTime);{
-//             let rawTeeTime = new Date(date.getTime() + 9*60000);
-//             teeTime = rawTeeTime.toLocaleString('en-us', options)
-//             teeTimes.push(teeTime)
-//         } 
-
-//     }
-
-//     const timePlusNineMinString = addMinutes(date,9).toLocaleString('en-US', options)
-
-// }
-
 const changeCourse = async(page, course)=>{
-    // if 
     console.log('[+] Grabbing Current Url');
     const currentUrl = await page.url()
     console.log('[+] Creating New Url');
     const newUrl = currentUrl.split('course')[0] + `course=${course}`
     console.log(`[+] Navigating To ${course}`);
-    console.log(newUrl)
+    console.log('[+] ', newUrl)
     await page.goto(newUrl, {waitUntil : 'domcontentloaded' }).catch(e => void 0)
-    // await page.waitForNavigation()
     console.log('[+] Navigated');
     return
 }
 
 const addPlayers = async (page, players=4)=>{
-    //data-fttab=".ftMs-guestTbd"
     const TBD = await page.$x('//div[contains(@data-fttab, "ftMs-guestTbd") and contains(.,"TBD")]')
     await TBD[0].click()
     const TBDInput = await page.$x('//div[contains(@class, "ftMs-listItem") and contains(.,"X")]')
@@ -334,8 +284,6 @@ const addRyan = async(page) =>{
     await page.click('div[data-ftid="5322"]')
     await page.select(`div#slot_player_row_${1} .transport_type`, 'CRT')
     return await requestTime(page)
-    // await addPlayers(page, players=2)
-
 
 }
 
@@ -364,19 +312,13 @@ const checkBusy = async (page)=>{
     }else return false
 }
 
-const setJobStatus = async (id) =>{
-
-}
-
 const requestTime = async (page)=>{
     await page.click('div.button_container a.submit_request_button')
     await page.waitForTimeout(2000)
     if(await checkRestriction(page)){
-        // await page.waitForTimeout(2000)
         await closePopup(page)
         await clearPlayer(page)
         return await addRyan(page)
-        // return
     }
     
     const [successMsg] = await page.$x('//span[contains(@id, "ui-id-18") and contains(.,"Request Complete")]')
@@ -384,8 +326,6 @@ const requestTime = async (page)=>{
        console.log('[+] Tee Time Set')
        const [btn] = await page.$x('//span[contains(@class, "ui-button-text") and contains(.,"Continue")]')
        await btn.click()
-    //    console.log(sucess)
-    //    await completeJob(browser, true, jobId, sucess.time, sucess.course, member)
        return true
     }
     else{
@@ -393,9 +333,6 @@ const requestTime = async (page)=>{
         await closePopup(page)
         return false
     } 
-    // const sucessMsg = page.evaluate(()=>{
-    //     const popup = document.querySelector
-    // })
 }
 
 const checkTime = () =>{
@@ -409,11 +346,10 @@ const checkTime = () =>{
 }
 
 const completeJob = async ( browser, sucess, id, time=null, course=null, member=null)=>{
-    // const { endJob } = require('c:/Users/carjames/OneDrive - Cisco/Documents/Code/Barton-Bot-Backend/utils/bot/botJobActions');
     const { endJob } = require('./botJobActions');
 
     try {
-        // await browser.close()
+        await browser.close()
         console.log('[+] Job Completed')
         await endJob(sucess, id, time, course, member)
     } catch (error) {
@@ -421,26 +357,6 @@ const completeJob = async ( browser, sucess, id, time=null, course=null, member=
     }
 }
 
-const testHover = async ()=>{
-    const browser = await puppeteer.launch({
-        headless: false,
-        defaultViewport: null,
-        // args: ['--start-maximized', `--proxy-server=${proxy}`]
-    });
-    puppeteer.use(StealthPlugin())
-    
-    process.on('SIGTERM', async () => {
-    console.log('End Gracefuly')
-    await browser.close();
-    });
-    
-    const page = (await browser.pages())[0]
-    await page.goto(`https://www.bartoncreekmembers.com/`, {waitUntil : 'load' }).catch(e => void 0);
-    const [golfLink] = await page.$x("//a[contains(., 'Golf')]");
-    if(golfLink){
-        await golfLink.hover()
-}
-}
 // startBot(member=null, proxy=null, username, password, startTime, endTime, courseList, jobId){ 
     
 // startBot(member="Nicole", proxy=null, 'dgriffus','Bestteetimes1', '10:18 AM', '11:12 AM', ['Coore Crenshaw Cliffside', 'Fazio Foothills'], '632e373700c78772c62704eb')

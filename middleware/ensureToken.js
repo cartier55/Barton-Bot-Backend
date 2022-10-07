@@ -9,7 +9,6 @@ const ensureToken = async (req, res, next) => {
     debug('[+] Verifying Token')
     jwt.verify(bearerToken, process.env.JWT_ACCESS_SECRET, (err, result) => {
         if(err) { 
-            // res.status(403).json({msg:'Invalid Access Token'})
             debug('[-] Invalid Token')
             res.status(403).send('Invalid Access Token')
         }else{

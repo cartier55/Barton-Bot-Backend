@@ -18,12 +18,15 @@ const pendingJobModel = new mongoose.Schema({
 },{collection:'pendingjobs'})
 
 pendingJobModel.post('save', function() {
+  // After job is saved if it had startDate or startTime send job to createCron func
   if(this.botStartDate || this.botStartTime){
     createCron(this)
-} 
+  } 
 });
 
 pendingJobModel.pre('findOneAndUpdate', async function() {
+  // Before job is updated if it had startDate or startTime send job to removeCron func
+  // Important becuase we dont want multiple cron jobs running for the same bot job
   const docToUpdate = await this.model.findOne(this.getQuery());
   if(docToUpdate.botStartDate || docToUpdate.botStartTime){
     removeCron(docToUpdate.date)
@@ -31,15 +34,16 @@ pendingJobModel.pre('findOneAndUpdate', async function() {
 });
 
 pendingJobModel.post('findOneAndUpdate', function() {
+  // After job is updated if it is updating the startDate or startTime sending job to createCron
   const id = this._conditions._id.toString()
-  console.log('updatre post func')
-  console.log(this._update['$set'].courseList)
   if(this._update['$set'].botStartDate || this._update['$set'].botStartTime){
     createCron({id:id, ...this._update['$set']})
   }
 });
 
 pendingJobModel.pre('findOneAndDelete', async function() {
+  // Before job is deleted if there is a startDate or startTime sends job to removeCron
+  // Important cause dont need cron jobs to run for deleted jobs
   const docToDelete = await this.model.findOne(this.getQuery());
   if(docToDelete.botStartDate || docToDelete.botStartTime){
     removeCron(docToDelete.date)

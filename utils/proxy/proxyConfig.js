@@ -1,6 +1,5 @@
 const Proxy = require('../../models/proxyModel');
 const User = require('../../models/userModel');
-const mongoose = require('mongoose');
 const mongoConnect = require('../db/mongoConnect');
 const { encryptToken } = require('./tokenCrypt');
 const debug = require('debug')('app:proxyConfig');
@@ -18,7 +17,6 @@ const newProxyConfig = async (url, token, username, expUsername) =>{
             iv
         })
         debug('[+] Created Proxy Config %O', proxy)
-        // console.log('Created Proxy Config', proxy);
         const status = await associateProxy(proxy, expUsername)
         return {...status, ...proxy}
     } catch (err) {
@@ -30,7 +28,6 @@ const newProxyConfig = async (url, token, username, expUsername) =>{
 
 const associateProxy = async (proxy, username) =>{
     try {
-        // const resp = await User.updateOne({username:username}, {$set:{proxyConfig:proxy}} )
         debug('[+] Associating Proxy -> User')
         const resp = await User.findOneAndUpdate({username:username}, {$set:{proxyConfig:proxy}}, {new:true}) //Returns whole document reciord
         if(resp.proxyConfig){

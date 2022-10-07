@@ -1,5 +1,4 @@
 const User = require('../../models/userModel');
-const mongoose = require('mongoose');
 const mongoConnect = require('../db/mongoConnect');
 const debug = require('debug')('app:createUser');
 
@@ -12,7 +11,6 @@ const newUser = async (username, password) =>{
             password
         })
         debug('[+] Created %O', resp)
-        // console.log('Created', resp);
         return {status:"success"}
     } catch (err) {
         debug('[-] Error Creating User')
