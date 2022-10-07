@@ -38,8 +38,8 @@ const logIn = async (req,res)=>{
         if(await bcrypt.compare(password, resp.user.password)){
             debug('[+] Valid Password')
             debug('[+] Signing Tokens...')
-            const accessToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_ACCESS_SECRET, {expiresIn:'15m'})
-            const refreshToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_REFRESH_SECRET, {expiresIn:'15m'})
+            const accessToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_ACCESS_SECRET, {expiresIn:'1h'})
+            const refreshToken = jwt.sign({id:resp.user._id, username:resp.user.username}, JWT_REFRESH_SECRET, {expiresIn:'1d'})
             debug('[+] Tokens Signed')
             res.cookie('jwt', refreshToken, {httpOnly:true, maxAge:ms('1d')})
             const msg = await loginUser(username, refreshToken)
@@ -104,7 +104,7 @@ const refreshToken = async (req,res)=>{
             return res.status(400).send({msg:"Invalid Refresh Token"})
         } 
         debug('[+] Valid Token')
-        const accessToken = jwt.sign({username:decoded.username}, process.env.JWT_ACCESS_SECRET, {expiresIn:'30s'})
+        const accessToken = jwt.sign({username:decoded.username}, process.env.JWT_ACCESS_SECRET, {expiresIn:'1h'})
         debug('[+] Access Token Refreshed')
         return res.status(200).send({msg:'success', accessToken:accessToken})
     })
