@@ -1,2 +1,0 @@
-username=teck
-password=P7ktjDp8QjiaWIWW
